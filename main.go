@@ -12,7 +12,7 @@ import (
 const apiKey = "662ea841f1a740f7a638cc0f82f16860" // Replace with your actual API key
 const apiUrl = "https://emailvalidation.abstractapi.com/v1/"
 
-// Response structure to hold the JSON response from the API
+// Response 
 type ApiResponse struct {
 	Email             string               `json:"email"`
 	Deliverability    string               `json:"deliverability"`
@@ -24,47 +24,36 @@ type ApiResponse struct {
 }
 
 func main() {
-	// Prompt user to enter an email
 	fmt.Print("Enter the email address to validate: ")
 	var email string
 	fmt.Scanln(&email)
-
-	// Validate the input format
 	if !isValidEmail(email) {
 		fmt.Println("Invalid email format.")
 		return
 	}
-
-	// Call the API with the user-provided email
 	MakeRequest(email)
 }
 
-// Function to make a request to the Abstract API
 func MakeRequest(email string) {
-	// Prepare the URL with the email and API key
+	// URL with the email and API key
 	url := fmt.Sprintf("%s?api_key=%s&email=%s", apiUrl, apiKey, email)
-
-	// Make the GET request to the API
 	resp, err := http.Get(url)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer resp.Body.Close()
 
-	// Read the response body
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Parse the JSON response
 	var apiResp ApiResponse
 	err = json.Unmarshal(body, &apiResp)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Output the results
 	fmt.Printf("\nVerification results for %s:\n", email)
 	fmt.Printf("Deliverability: %s\n", apiResp.Deliverability)
 	fmt.Printf("Valid Format: %t\n", apiResp.IsValidFormat.Value)
@@ -74,8 +63,6 @@ func MakeRequest(email string) {
 	fmt.Printf("SMTP Check: %t\n", apiResp.SmtpCheck.Value)
 }
 
-// Function to validate the email format
 func isValidEmail(email string) bool {
-	// Simple email format validation using Go's strings package
 	return strings.Contains(email, "@") && strings.Contains(email, ".")
 }
